@@ -462,6 +462,24 @@ class ImageGeneration(NativeOrLocalTool[AgentDepsT]):
                 stacklevel=3,
             )
 
+    # TODO(v3): remove the `fallback_model` property, the deprecated spelling of `fallback_subagent_model`.
+    # The message is spelled out rather than shared with the helper that warns at construction:
+    # a type checker only reports a deprecation whose message is a string literal.
+    @property
+    @deprecated(
+        '`fallback_model` is deprecated; use `fallback_subagent_model` instead.', category=PydanticAIDeprecationWarning
+    )
+    def fallback_model(self) -> ImageGenerationFallbackModel:
+        """Deprecated alias for [`fallback_subagent_model`][pydantic_ai.capabilities.ImageGeneration.fallback_subagent_model]."""
+        return self.fallback_subagent_model
+
+    @fallback_model.setter
+    @deprecated(
+        '`fallback_model` is deprecated; use `fallback_subagent_model` instead.', category=PydanticAIDeprecationWarning
+    )
+    def fallback_model(self, value: ImageGenerationFallbackModel) -> None:
+        self.fallback_subagent_model = value
+
     @cached_property
     def _direct_generator(self) -> ImageGenerator | ImageGenerationModel | None:
         """The generator or model to build `generate_image` from, if a direct one is configured.
@@ -638,24 +656,6 @@ class ImageGeneration(NativeOrLocalTool[AgentDepsT]):
         if not self._has_direct_generator:
             ignored.extend(self._direct_only_geometry())
         return kwargs, ignored
-
-    # TODO(v3): remove the `fallback_model` property, the deprecated spelling of `fallback_subagent_model`.
-    # The message is spelled out rather than shared with the helper that warns at construction:
-    # a type checker only reports a deprecation whose message is a string literal.
-    @property
-    @deprecated(
-        '`fallback_model` is deprecated; use `fallback_subagent_model` instead.', category=PydanticAIDeprecationWarning
-    )
-    def fallback_model(self) -> ImageGenerationFallbackModel:
-        """Deprecated alias for [`fallback_subagent_model`][pydantic_ai.capabilities.ImageGeneration.fallback_subagent_model]."""
-        return self.fallback_subagent_model
-
-    @fallback_model.setter
-    @deprecated(
-        '`fallback_model` is deprecated; use `fallback_subagent_model` instead.', category=PydanticAIDeprecationWarning
-    )
-    def fallback_model(self, value: ImageGenerationFallbackModel) -> None:
-        self.fallback_subagent_model = value
 
     def _image_gen_kwargs(self) -> dict[str, Any]:
         """Collect settings supported by the native `ImageGenerationTool` path."""
